@@ -1,0 +1,351 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "GS1 Signing Service",
+    "version": "1.0.0",
+    "description": "Signing-as-a-Service for GS1 Digital License credentials. Signs W3C VC 2.0 credentials as VC-JWT (ES256). The private key stays in Azure Key Vault. Every request is checked against a signing policy before anything is signed."
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "Same origin as this page"
+    }
+  ],
+  "security": [
+    {
+      "apiKey": []
+    },
+    {
+      "entra": []
+    }
+  ],
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "summary": "Liveness and configuration check",
+        "security": [],
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "Healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "ok"
+                    },
+                    "version": {
+                      "type": "string"
+                    },
+                    "environment": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Misconfigured"
+          }
+        }
+      }
+    },
+    "/v1/keys": {
+      "get": {
+        "summary": "List usable signing keys (public part only)",
+        "operationId": "listKeys",
+        "responses": {
+          "200": {
+            "description": "Keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "keys": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Key"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing scope keys:read",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sign/vc-jwt": {
+      "post": {
+        "summary": "Sign a credential as VC-JWT (ES256)",
+        "operationId": "signVcJwt",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signed credential",
+            "headers": {
+              "X-Signing-Backend": {
+                "description": "keyvault or mock (test only)",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid JSON",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (scope or key not allowed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown keyId",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Too large",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content-Type must be application/json",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected by signing policy; see problems[]",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Key store unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API key (gsk_...) as Bearer token or X-Api-Key header"
+      },
+      "entra": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Microsoft Entra ID access token with app role Signer"
+      }
+    },
+    "schemas": {
+      "Problem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "problems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Key": {
+        "type": "object",
+        "properties": {
+          "keyId": {
+            "type": "string"
+          },
+          "default": {
+            "type": "boolean"
+          },
+          "backend": {
+            "enum": [
+              "keyvault",
+              "mock"
+            ]
+          },
+          "issuer": {
+            "type": "string"
+          },
+          "verificationMethod": {
+            "type": "string"
+          },
+          "alg": {
+            "const": "ES256"
+          },
+          "publicKeyJwk": {
+            "type": "object"
+          },
+          "didVerificationMethod": {
+            "type": "object",
+            "description": "Ready to paste into the DID document"
+          }
+        }
+      },
+      "SignRequest": {
+        "type": "object",
+        "required": [
+          "credential"
+        ],
+        "properties": {
+          "keyId": {
+            "type": "string",
+            "description": "Defaults to the service's default key"
+          },
+          "credential": {
+            "type": "object",
+            "description": "W3C VC 2.0 credential without proof"
+          }
+        }
+      },
+      "SignResponse": {
+        "type": "object",
+        "properties": {
+          "jwt": {
+            "type": "string"
+          },
+          "keyId": {
+            "type": "string"
+          },
+          "kid": {
+            "type": "string"
+          },
+          "alg": {
+            "const": "ES256"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

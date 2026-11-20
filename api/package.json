@@ -1,0 +1,20 @@
+{
+  "name": "gs1-signing-service-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Signing-as-a-Service for GS1 Digital License credentials (VC-JWT, ES256). Azure Functions v4 (Node).",
+  "main": "src/functions/*.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "func start",
+    "test": "node --test test/*.test.js",
+    "keygen": "node ../scripts/generate-api-key.mjs"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.0",
+    "@azure/identity": "^4.4.1",
+    "@azure/keyvault-keys": "^4.8.0",
+    "jose": "^5.9.0"
+  }
+}

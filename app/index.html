@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GS1 Signing Service</title>
+<style>
+body{font:16px/1.5 ui-sans-serif,system-ui,sans-serif;margin:0;background:#f4f5f7;color:#17233b}
+main{max-width:720px;margin:48px auto;padding:0 20px}
+h1{margin:0 0 4px}.card{background:#fff;border:1px solid #d9dde4;border-radius:6px;padding:16px 20px;margin:16px 0}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;background:#eef0f4;padding:1px 5px;border-radius:4px}
+#st{font-weight:600}.ok{color:#1d7a4f}.bad{color:#b3261e}a{color:#17233b}
+</style></head>
+<body><main>
+<h1>GS1 Signing Service</h1>
+<p>Signing as a service for GS1 Digital License credentials (VC-JWT, ES256). The private key stays in Azure Key Vault.</p>
+<div class="card">Status: <span id="st">checking…</span></div>
+<div class="card"><b>API</b>
+<ul>
+<li><code>GET /api/v1/health</code> public</li>
+<li><code>GET /api/v1/keys</code> public keys and DID verification method</li>
+<li><code>POST /api/v1/sign/vc-jwt</code> sign a credential</li>
+</ul>
+Authentication: <code>Authorization: Bearer &lt;api key&gt;</code> or a Microsoft Entra ID token.<br>
+<a href="/openapi.json">OpenAPI description</a></div>
+<script src="status.js"></script>
+</main></body></html>

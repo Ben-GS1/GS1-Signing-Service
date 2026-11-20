@@ -1,0 +1,13 @@
+{
+  "did": "did:web:example.org:gs1ch-test",
+  "verificationMethod": "did:web:example.org:gs1ch-test#3yKo_26EQg6XVwBDy_tSyMT2CayRh6ViCO-tXOHjr30",
+  "privateJwk": {
+    "kty": "EC",
+    "crv": "P-256",
+    "x": "eS7pyhM7xfwcTyJ_-ek5vzyYo2Mjy_0mnixsXoCcEXk",
+    "y": "6G5HydchiP6jNPJZGy5Oo1cvsaNOLJIx8CG4TKSfpS8",
+    "d": "3WWTP6Q4YScEVfaw4mbPcUKol8LM3laal6xb7LWGMao",
+    "kid": "3yKo_26EQg6XVwBDy_tSyMT2CayRh6ViCO-tXOHjr30",
+    "alg": "ES256"
+  }
+}
