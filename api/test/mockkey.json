@@ -1,6 +1,6 @@
 {
-  "did": "did:web:example.org:gs1ch-test",
-  "verificationMethod": "did:web:example.org:gs1ch-test#3yKo_26EQg6XVwBDy_tSyMT2CayRh6ViCO-tXOHjr30",
+  "did": "did:web:vc.gs1.ch",
+  "verificationMethod": "did:web:vc.gs1.ch#3yKo_26EQg6XVwBDy_tSyMT2CayRh6ViCO-tXOHjr30",
   "privateJwk": {
     "kty": "EC",
     "crv": "P-256",

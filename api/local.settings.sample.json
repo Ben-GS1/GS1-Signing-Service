@@ -4,9 +4,9 @@
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "SERVICE_ENV": "development",
-    "SIGNING_KEYS": "[{\"id\": \"gs1ch-test\", \"backend\": \"mock\", \"issuer\": \"did:web:example.org:gs1ch-test\", \"verificationMethod\": \"did:web:example.org:gs1ch-test#3yKo_26EQg6XVwBDy_tSyMT2CayRh6ViCO-tXOHjr30\", \"jwk\": {\"kty\": \"EC\", \"crv\": \"P-256\", \"x\": \"eS7pyhM7xfwcTyJ_-ek5vzyYo2Mjy_0mnixsXoCcEXk\", \"y\": \"6G5HydchiP6jNPJZGy5Oo1cvsaNOLJIx8CG4TKSfpS8\", \"d\": \"3WWTP6Q4YScEVfaw4mbPcUKol8LM3laal6xb7LWGMao\", \"kid\": \"3yKo_26EQg6XVwBDy_tSyMT2CayRh6ViCO-tXOHjr30\", \"alg\": \"ES256\"}}]",
+    "SIGNING_KEYS": "[{\"id\": \"gs1ch-test\", \"backend\": \"mock\", \"issuer\": \"did:web:vc.gs1.ch\", \"verificationMethod\": \"did:web:vc.gs1.ch#3yKo_26EQg6XVwBDy_tSyMT2CayRh6ViCO-tXOHjr30\", \"jwk\": {\"kty\": \"EC\", \"crv\": \"P-256\", \"x\": \"eS7pyhM7xfwcTyJ_-ek5vzyYo2Mjy_0mnixsXoCcEXk\", \"y\": \"6G5HydchiP6jNPJZGy5Oo1cvsaNOLJIx8CG4TKSfpS8\", \"d\": \"3WWTP6Q4YScEVfaw4mbPcUKol8LM3laal6xb7LWGMao\", \"kid\": \"3yKo_26EQg6XVwBDy_tSyMT2CayRh6ViCO-tXOHjr30\", \"alg\": \"ES256\"}}]",
     "API_KEYS": "[{\"id\": \"issuer-spa\", \"sha256\": \"e510995c46782c14e72308b937307ce8db2011e7ac097f725f5fbfb522ea5615\", \"scopes\": [\"sign\", \"keys:read\"], \"keyIds\": [\"*\"], \"rateLimitPerMinute\": 120}]",
-    "SIGNING_POLICY": "{\"idPrefixes\": [\"https://vc.gs1.ch/\", \"https://gs1-epcis-reg.org/\"]}",
+    "SIGNING_POLICY": "{\"idPrefixes\": [\"https://vc.gs1.ch/vc/\"]}",
     "ALLOWED_ORIGINS": "null,http://localhost:4280,http://localhost:8080"
   }
 }

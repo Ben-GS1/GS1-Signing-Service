@@ -50,14 +50,14 @@ curl -s -X POST https://<your-app>.azurestaticapps.net/api/v1/sign/vc-jwt \
 ## Run locally
 
 ```bash
-cd api && npm ci && npm test                      # 13 tests
+cd api && npm ci && npm test                      # 15 tests
 cp local.settings.sample.json local.settings.json # contains the mocked TEST key and the dev API key gsk_local-dev-test-key-change-me
 npm i -g @azure/static-web-apps-cli azure-functions-core-tools@4
 swa start ../app --api-location .                 # http://localhost:4280  (API: http://localhost:4280/api/v1/health)
 ```
 
 ## Test phase: mocked key
-`local.settings.sample.json` contains a throw-away P-256 key (the same TEST key and test DID `did:web:example.org:gs1ch-test` that the issuer ships with). Responses carry `X-Signing-Backend: mock` and `GET /api/v1/keys` reports `"backend": "mock"`, which the issuer displays as a warning. Never use this key for anything real.
+`local.settings.sample.json` contains a throw-away P-256 key (the same TEST key that the issuer expects, with the issuer DID `did:web:vc.gs1.ch`). Responses carry `X-Signing-Backend: mock` and `GET /api/v1/keys` reports `"backend": "mock"`, which the issuer displays as a warning. Never use this key for anything real.
 
 ## Going live with Azure Key Vault
 1. Run (and adapt) `infra/setup-azure.sh`: Static Web App, Key Vault (RBAC, purge protection), EC P-256 key `gln-signing`.

@@ -1,8 +1,8 @@
 // Configuration from environment variables / Azure application settings. Fails closed: any problem => service reports "misconfigured".
 const DEFAULT_POLICY = {
-  allowedTypes: ['KeyCredential', 'OrganizationDataCredential', 'BitstringStatusListCredential'],
+  allowedTypes: ['KeyCredential', 'DataCredential', 'OrganizationDataCredential', 'GS1CompanyPrefixLicenseCredential', 'BitstringStatusListCredential'],
   idPrefixes: [],                       // credential "id" must start with one of these (empty = not enforced, NOT recommended)
-  requireValidUntilFor: ['KeyCredential', 'OrganizationDataCredential'],
+  requireValidUntilFor: ['KeyCredential', 'OrganizationDataCredential', 'GS1CompanyPrefixLicenseCredential'],
   maxValidityDays: 3650,
   maxPayloadBytes: 131072,
   requiredContext: 'https://www.w3.org/ns/credentials/v2',

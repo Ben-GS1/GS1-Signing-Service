@@ -14,13 +14,13 @@ const KEY = { id: 'test', backend: 'mock', issuer: MOCK.did, verificationMethod:
 const baseEnv = (over = {}) => ({
   SIGNING_KEYS: JSON.stringify([KEY]),
   API_KEYS: JSON.stringify([{ id: 'spa', sha256: hex(API_KEY), scopes: ['sign', 'keys:read'], keyIds: ['*'] }]),
-  SIGNING_POLICY: JSON.stringify({ idPrefixes: ['https://vc.gs1.ch/', 'https://gs1-epcis-reg.org/'] }),
+  SIGNING_POLICY: JSON.stringify({ idPrefixes: ['https://vc.gs1.ch/vc/'] }),
   ALLOWED_ORIGINS: 'null,http://localhost:4280', ...over,
 });
 const mk = (over, deps) => createService(loadConfig(baseEnv(over)), deps);
 const credential = (o = {}) => ({
   '@context': ['https://www.w3.org/ns/credentials/v2', 'https://ref.gs1.org/gs1/vc/declaration-context'],
-  id: 'https://vc.gs1.ch/credentials/gln/0810159550000.jwt', type: ['VerifiableCredential', 'KeyCredential'], issuer: { id: MOCK.did, name: 'x' },
+  id: 'https://vc.gs1.ch/vc/credentials/gln/7612345000009.jwt', type: ['VerifiableCredential', 'KeyCredential'], issuer: { id: MOCK.did, name: 'x' },
   validFrom: new Date().toISOString(), validUntil: new Date(Date.now() + 365 * 864e5).toISOString(),
   credentialSubject: { id: 'https://id.gs1.org/417/0810159550000' }, ...o });
 const call = (svc, method, path, { key = API_KEY, body, headers = {} } = {}) => svc.handle({
@@ -89,8 +89,19 @@ test('signing policy rejects what must not be signed', async () => {
     const r = await call(s, 'POST', '/v1/sign/vc-jwt', { body: { credential: credential(o) } });
     assert.equal(r.status, 422, name + ': ' + r.body); assert.ok(parse(r).problems.length);
   }
-  const status = credential({ type: ['VerifiableCredential', 'BitstringStatusListCredential'], validUntil: undefined, id: 'https://gs1-epcis-reg.org/credentials/status/revocation.jwt' });
+  const status = credential({ type: ['VerifiableCredential', 'BitstringStatusListCredential'], validUntil: undefined, id: 'https://vc.gs1.ch/vc/credentials/status/revocation.jwt' });
   assert.equal((await call(s, 'POST', '/v1/sign/vc-jwt', { body: { credential: status } })).status, 200, 'status list needs no validUntil');
+});
+
+test('GLN data credential type (DataCredential + OrganizationDataCredential) is allowed', async () => {
+  const r = await call(mk(), 'POST', '/v1/sign/vc-jwt', { body: { credential: credential({ type: ['VerifiableCredential', 'DataCredential', 'OrganizationDataCredential'], id: 'https://vc.gs1.ch/vc/credentials/gln-data/7612345000009.jwt' }) } });
+  assert.equal(r.status, 200, r.body);
+});
+
+test('GCP license credentials (GS1CompanyPrefixLicenseCredential) are signed, with validUntil required', async () => {
+  const gcp = o => credential({ type: ['VerifiableCredential', 'GS1CompanyPrefixLicenseCredential'], id: 'https://vc.gs1.ch/vc/credentials/gcp/7612345.jwt', ...o });
+  assert.equal((await call(mk(), 'POST', '/v1/sign/vc-jwt', { body: { credential: gcp() } })).status, 200);
+  assert.equal((await call(mk(), 'POST', '/v1/sign/vc-jwt', { body: { credential: gcp({ validUntil: undefined }) } })).status, 422);
 });
 
 test('request validation', async () => {
